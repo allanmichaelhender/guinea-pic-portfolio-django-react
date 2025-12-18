@@ -17,6 +17,8 @@ const PortfoliosForm = ({ onSourceChange }) => {
     },
   });
 
+  const today = new Date().toISOString().split("T")[0];
+
   const onSubmit = async (data) => {
     try {
       const response = await api.post("/api/portfolios/", data);
@@ -46,19 +48,46 @@ const PortfoliosForm = ({ onSourceChange }) => {
         />{" "}
         Monthly
       </div>
-        
-      <input type="number" className="amount-input" step="0.01" {...register("investment_amount", { valueAsNumber: true })}/>
+
+      <input
+        type="number"
+        className="amount-input"
+        step="0.01"
+        {...register("investment_amount", { valueAsNumber: true })}
+      />
 
       <input
         type="date"
         className="date-input-field"
-        {...register("start_date")}
+        {...register("start_date", {
+          required: "A date is required",
+          min: {
+            value: "2015-01-01",
+            message: "Date cannot be before January 1st, 2015",
+          },
+          max: {
+            value: today,
+            message: "Date cannot be in the future",
+          },
+        })}
       />
+      {errors.start_date && <span>{errors.start_date.message}</span>}
       <input
         type="date"
         className="date-input-field"
-        {...register("end_date")}
+        {...register("end_date", {
+          required: "A date is required",
+          min: {
+            value: "2015-01-01",
+            message: "Date cannot be before January 1st, 2015",
+          },
+          max: {
+            value: today,
+            message: "Date cannot be in the future",
+          },
+        })}
       />
+      {errors.end_date && <span>{errors.end_date.message}</span>}
 
       <input
         type="number"
@@ -80,6 +109,8 @@ const PortfoliosForm = ({ onSourceChange }) => {
         className="weight-input"
         {...register("NIKKEI225_weight", { valueAsNumber: true })}
       />
+
+
 
       <button type="submit">Submit Portfolio</button>
     </form>

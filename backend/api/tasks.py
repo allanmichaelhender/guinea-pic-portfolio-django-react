@@ -1,5 +1,5 @@
 import requests
-from .models import FtseData, Snp500Data, Nikkei225Data
+from .models import EuronextData, FtseData, Snp500Data, Nikkei225Data, SseData
 from datetime import date
 
 datefrom = "2015-01-01"
@@ -30,7 +30,7 @@ def fetch_daily_data():
         if isinstance(data, list):
             for item in data:
                 FtseData.objects.update_or_create(
-                    date=item["date"],  
+                    date=item["date"],
                     defaults={
                         "open": item["open"],
                         "high": item["high"],
@@ -51,7 +51,7 @@ def fetch_daily_data():
         if isinstance(data, list):
             for item in data:
                 Snp500Data.objects.update_or_create(
-                    date=item["date"],  
+                    date=item["date"],
                     defaults={
                         "open": item["open"],
                         "high": item["high"],
@@ -62,7 +62,7 @@ def fetch_daily_data():
                         "changePercent": item.get("changePercent"),
                     },
                 )
-    nikkei225_api_url = create_url("^FTSE", datefrom, dateto, api_key)
+    nikkei225_api_url = create_url("^N225", datefrom, dateto, api_key)
     nikkei225_response = requests.get(nikkei225_api_url, timeout=30)
 
     if nikkei225_response.status_code == 200:
@@ -71,7 +71,49 @@ def fetch_daily_data():
         if isinstance(data, list):
             for item in data:
                 Nikkei225Data.objects.update_or_create(
-                    date=item["date"], 
+                    date=item["date"],
+                    defaults={
+                        "open": item["open"],
+                        "high": item["high"],
+                        "low": item["low"],
+                        "close": item["close"],
+                        "volume": item["volume"],
+                        "change": item["change"],
+                        "changePercent": item.get("changePercent"),
+                    },
+                )
+
+    Euronext_api_url = create_url("^n100", datefrom, dateto, api_key)
+    Euronext_response = requests.get(Euronext_api_url, timeout=30)
+
+    if Euronext_response.status_code == 200:
+        data = Euronext_response.json()
+
+        if isinstance(data, list):
+            for item in data:
+                EuronextData.objects.update_or_create(
+                    date=item["date"],
+                    defaults={
+                        "open": item["open"],
+                        "high": item["high"],
+                        "low": item["low"],
+                        "close": item["close"],
+                        "volume": item["volume"],
+                        "change": item["change"],
+                        "changePercent": item.get("changePercent"),
+                    },
+                )
+
+    Sse_api_url = create_url("000001.SS", datefrom, dateto, api_key)
+    Sse_response = requests.get(Sse_api_url, timeout=30)
+
+    if Sse_response.status_code == 200:
+        data = Sse_response.json()
+
+        if isinstance(data, list):
+            for item in data:
+                SseData.objects.update_or_create(
+                    date=item["date"],
                     defaults={
                         "open": item["open"],
                         "high": item["high"],
