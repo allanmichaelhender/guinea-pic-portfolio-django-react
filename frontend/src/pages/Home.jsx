@@ -26,7 +26,7 @@ function Home() {
     api
       .delete(`/api/portfolios/${id}/`)
       .then((res) => {
-        if (res.status === 204) alert("Note deleted!");
+        if (res.status === 204) alert("Porfoliio deleted!");
         else alert("Failed to delete note.");
         getPortfolios();
       })
